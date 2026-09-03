@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=5" />
+    <link rel="stylesheet" href="./styles.css?v=6" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -19,14 +19,13 @@
       <aside class="sidebar" aria-label="Primary navigation">
         <button class="brand" data-route="home" aria-label="RareConnect home">
           <span class="brand-mark" aria-hidden="true">R</span>
-          <span><strong>RareConnect</strong><small>Gujarat founding cohort</small></span>
+          <span><strong>RareConnect</strong><small>Here, together</small></span>
         </button>
         <nav class="side-nav" id="side-nav"></nav>
         <section class="pilot-card" aria-label="Pilot status">
-          <span class="eyebrow">Closed pilot</span>
-          <strong>Adults &amp; caregivers</strong>
-          <p>Invite-only prototype. No medical advice or emergency support.</p>
-          <button class="text-button" id="pilot-info-button">How safety works <span aria-hidden="true">→</span></button>
+          <span class="pilot-shield" aria-hidden="true">✓</span>
+          <span><strong>Safer by design</strong><small>Adults &amp; caregivers</small></span>
+          <button class="icon-link dark" id="pilot-info-button" aria-label="How safety works">→</button>
         </section>
         <button class="profile-chip" id="sidebar-profile" data-route="profile">
           <span class="avatar avatar-asha">AS</span>
@@ -40,9 +39,8 @@
           <button class="mobile-brand" data-route="home" aria-label="RareConnect home"><span class="brand-mark">R</span><strong>RareConnect</strong></button>
           <label class="global-search">
             <span class="sr-only">Search RareConnect</span>
-            <span aria-hidden="true">⌕</span>
-            <input id="global-search" type="search" autocomplete="off" placeholder="Search communities, people and resources" />
-            <kbd>⌘ K</kbd>
+            <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="global-search" type="search" autocomplete="off" placeholder="Search RareConnect" />
           </label>
           <div class="topbar-actions">
             <button class="icon-button" id="language-button" aria-label="Choose language">EN</button>
@@ -59,6 +57,6 @@
 
     <div id="modal-root"></div>
     <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
-    <script type="module" src="./app.js?v=5"></script>
+    <script type="module" src="./app.js?v=6"></script>
   </body>
 </html>
