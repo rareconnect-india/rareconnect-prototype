@@ -1,0 +1,46 @@
+name: Technical defect
+description: Report a reproducible problem using fictional data only.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a public repository. **Do not include names, diagnoses, contact details, medical reports, credentials or other personal information.**
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the technical defect and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Use fictional seeded data only.
+      placeholder: |
+        1. Open...
+        2. Select...
+        3. Observe...
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - Desktop web
+        - Android browser
+        - iPhone browser
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I confirm this report contains no real personal, medical or secret information.
+          required: true
