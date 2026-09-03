@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#073d3d" />
+    <meta name="description" content="RareConnect — a safe community prototype for adults living with rare diseases and caregivers." />
+    <title>RareConnect Prototype</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=5" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div id="app" class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <button class="brand" data-route="home" aria-label="RareConnect home">
+          <span class="brand-mark" aria-hidden="true">R</span>
+          <span><strong>RareConnect</strong><small>Gujarat founding cohort</small></span>
+        </button>
+        <nav class="side-nav" id="side-nav"></nav>
+        <section class="pilot-card" aria-label="Pilot status">
+          <span class="eyebrow">Closed pilot</span>
+          <strong>Adults &amp; caregivers</strong>
+          <p>Invite-only prototype. No medical advice or emergency support.</p>
+          <button class="text-button" id="pilot-info-button">How safety works <span aria-hidden="true">→</span></button>
+        </section>
+        <button class="profile-chip" id="sidebar-profile" data-route="profile">
+          <span class="avatar avatar-asha">AS</span>
+          <span><strong>Asha Shah</strong><small>Caregiver · Ahmedabad</small></span>
+          <span aria-hidden="true">•••</span>
+        </button>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <button class="mobile-brand" data-route="home" aria-label="RareConnect home"><span class="brand-mark">R</span><strong>RareConnect</strong></button>
+          <label class="global-search">
+            <span class="sr-only">Search RareConnect</span>
+            <span aria-hidden="true">⌕</span>
+            <input id="global-search" type="search" autocomplete="off" placeholder="Search communities, people and resources" />
+            <kbd>⌘ K</kbd>
+          </label>
+          <div class="topbar-actions">
+            <button class="icon-button" id="language-button" aria-label="Choose language">EN</button>
+            <button class="icon-button notification-button" id="notifications-button" aria-label="Notifications"><span aria-hidden="true">♢</span><span class="notification-dot"></span></button>
+            <button class="avatar-button" data-route="profile" aria-label="Open profile"><span class="avatar avatar-asha">AS</span></button>
+          </div>
+        </header>
+
+        <main id="main-content" tabindex="-1"></main>
+      </div>
+
+      <nav class="bottom-nav" id="bottom-nav" aria-label="Mobile navigation"></nav>
+    </div>
+
+    <div id="modal-root"></div>
+    <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+    <script type="module" src="./app.js?v=5"></script>
+  </body>
+</html>
