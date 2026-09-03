@@ -6,7 +6,9 @@ RareConnect is an adults-and-caregivers-first community prototype for people aff
 
 ## Live demo
 
-The public GitHub Pages URL will be added here after the first deployment.
+[Open the working RareConnect prototype](https://rareconnect-india.github.io/rareconnect-prototype/).
+
+Source repository: [rareconnect-india/rareconnect-prototype](https://github.com/rareconnect-india/rareconnect-prototype)
 
 ## Preview
 
