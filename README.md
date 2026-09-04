@@ -10,16 +10,6 @@ RareConnect is an adults-and-caregivers-first community prototype for people aff
 
 Source repository: [rareconnect-india/rareconnect-prototype](https://github.com/rareconnect-india/rareconnect-prototype)
 
-## Preview
-
-Desktop community home:
-
-![RareConnect desktop community home](assets/rareconnect-desktop.png)
-
-Mobile safety-first onboarding:
-
-![RareConnect mobile onboarding](assets/rareconnect-mobile.png)
-
 ## What you can test
 
 - Adult/caregiver onboarding and community selection
@@ -30,6 +20,8 @@ Mobile safety-first onboarding:
 - Reporting, blocking and privacy controls
 - Service previews for care, equipment, schemes, trials, learning and grievance routes
 - Responsive desktop/mobile layouts and installable PWA metadata
+
+The interface uses a connection-first home screen, icon-led starting points, clear active states, grouped community content, and responsive desktop/mobile navigation.
 
 ## Run locally
 

@@ -11,14 +11,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=6" />
+    <link rel="stylesheet" href="./styles.css?v=7" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <div id="app" class="app-shell">
       <aside class="sidebar" aria-label="Primary navigation">
         <button class="brand" data-route="home" aria-label="RareConnect home">
-          <span class="brand-mark" aria-hidden="true">R</span>
+          <span class="brand-mark logo-mark" aria-hidden="true"><img src="./assets/brand/rareconnect-logo-concept-v3.svg" alt="" /></span>
           <span><strong>RareConnect</strong><small>Here, together</small></span>
         </button>
         <nav class="side-nav" id="side-nav"></nav>
@@ -36,15 +36,15 @@
 
       <div class="main-column">
         <header class="topbar">
-          <button class="mobile-brand" data-route="home" aria-label="RareConnect home"><span class="brand-mark">R</span><strong>RareConnect</strong></button>
+          <button class="mobile-brand" data-route="home" aria-label="RareConnect home"><span class="brand-mark logo-mark" aria-hidden="true"><img src="./assets/brand/rareconnect-logo-concept-v3.svg" alt="" /></span><strong>RareConnect</strong></button>
           <label class="global-search">
             <span class="sr-only">Search RareConnect</span>
             <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-            <input id="global-search" type="search" autocomplete="off" placeholder="Search RareConnect" />
+            <input id="global-search" type="search" autocomplete="off" placeholder="Search people, circles or support" aria-keyshortcuts="Control+K Meta+K" />
           </label>
           <div class="topbar-actions">
             <button class="icon-button" id="language-button" aria-label="Choose language">EN</button>
-            <button class="icon-button notification-button" id="notifications-button" aria-label="Notifications"><span aria-hidden="true">♢</span><span class="notification-dot"></span></button>
+            <button class="icon-button notification-button" id="notifications-button" aria-label="Notifications, 3 unread"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="notification-dot"></span></button>
             <button class="avatar-button" data-route="profile" aria-label="Open profile"><span class="avatar avatar-asha">AS</span></button>
           </div>
         </header>
@@ -57,6 +57,6 @@
 
     <div id="modal-root"></div>
     <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
-    <script type="module" src="./app.js?v=6"></script>
+    <script type="module" src="./app.js?v=7"></script>
   </body>
 </html>

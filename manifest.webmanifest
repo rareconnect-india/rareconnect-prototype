@@ -4,8 +4,8 @@
   "description": "A safe connection and services prototype for adults living with rare diseases and caregivers.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f4f7f6",
-  "theme_color": "#073d3d",
+  "background_color": "#f5f7f5",
+  "theme_color": "#043b3a",
   "icons": [
     {
       "src": "./icon.svg",

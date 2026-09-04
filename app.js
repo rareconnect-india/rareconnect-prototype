@@ -100,7 +100,9 @@ const defaultState = {
   notificationCount: 3,
   quietHours: true,
   privateProfile: true,
-  language: "EN"
+  language: "EN",
+  feedFilter: "latest",
+  communityFilter: "all"
 };
 
 let state = loadState();
@@ -151,6 +153,10 @@ function routeTo(route) {
 
 function render() {
   renderNavigation();
+  const notificationButton = document.querySelector("#notifications-button");
+  const notificationDot = notificationButton?.querySelector(".notification-dot");
+  if (notificationButton) notificationButton.setAttribute("aria-label", state.notificationCount ? `Notifications, ${state.notificationCount} unread` : "Notifications, none unread");
+  if (notificationDot) notificationDot.hidden = !state.notificationCount;
   const main = document.querySelector("#main-content");
   const routes = { home: renderHome, communities: renderCommunities, messages: renderMessages, services: renderServices, profile: renderProfile };
   main.innerHTML = (routes[state.route] || renderHome)();
@@ -159,31 +165,44 @@ function render() {
 }
 
 function renderHome() {
-  const posts = allPosts().filter((post) => state.joined.includes(post.community));
+  const joinedPosts = allPosts().filter((post) => state.joined.includes(post.community));
+  const posts = state.feedFilter === "questions"
+    ? joinedPosts.filter((post) => `${post.title} ${post.body}`.includes("?"))
+    : joinedPosts;
+  const request = state.incomingRequests.map(getPerson).find(Boolean);
   return `<div class="page">
+    <header class="home-intro card">
+      <div class="home-intro-copy">
+        <span class="eyebrow">Good morning, Asha</span>
+        <h1>What would feel helpful today?</h1>
+        <p>Connect, share, or find a practical next step.</p>
+      </div>
+      <div class="home-intro-mark" aria-hidden="true"><img src="./assets/brand/rareconnect-logo-concept-v3.svg" alt="" /></div>
+    </header>
+
+    <section class="start-region" aria-labelledby="start-title">
+      <div class="section-head start-heading"><div><span class="eyebrow">Start here</span><h2 id="start-title">Choose what you need</h2></div></div>
+      <div class="quick-actions" aria-label="Quick actions">
+        <button class="quick-action quick-primary" data-action="create-post"><span class="quick-icon mint-bg">${icon("pen")}</span><span><strong>Share</strong><small>Ask or tell</small></span>${icon("arrow", "quick-arrow")}</button>
+        <button class="quick-action" data-route="communities"><span class="quick-icon blue-bg">${icon("people")}</span><span><strong>Find people</strong><small>Your circles</small></span>${icon("arrow", "quick-arrow")}</button>
+        <button class="quick-action" data-route="services"><span class="quick-icon amber-bg">${icon("compass")}</span><span><strong>Get support</strong><small>Reviewed routes</small></span>${icon("arrow", "quick-arrow")}</button>
+        <button class="quick-action" data-route="messages"><span class="quick-icon coral-bg">${icon("chat")}</span><span><strong>Chat</strong><small>${state.notificationCount ? `${state.notificationCount} new` : "Your messages"}</small></span>${icon("arrow", "quick-arrow")}</button>
+      </div>
+    </section>
+
     <div class="grid home-grid">
       <div class="stack">
-        <section class="card welcome-card">
-          <span class="eyebrow hero-eyebrow">Good morning, Asha</span>
-          <h1>You’re among people<br>who understand.</h1>
-          <p>Share, listen, or find support—at your pace.</p>
-          <div class="welcome-actions"><button class="primary-button mint" data-action="create-post">${icon("pen")} Share something</button><button class="secondary-button" data-route="communities">${icon("people")} Find your circle</button></div>
-        </section>
-        <section class="quick-actions" aria-label="Quick actions">
-          <button class="quick-action" data-route="messages"><span class="quick-icon mint-bg">${icon("chat")}</span><span><strong>Talk</strong><small>${state.notificationCount ? `${state.notificationCount} new` : "Messages"}</small></span>${icon("arrow", "quick-arrow")}</button>
-          <button class="quick-action" data-route="services"><span class="quick-icon blue-bg">${icon("compass")}</span><span><strong>Find support</strong><small>Reviewed help</small></span>${icon("arrow", "quick-arrow")}</button>
-          <button class="quick-action" data-action="open-service" data-service="learning"><span class="quick-icon amber-bg">${icon("book")}</span><span><strong>Learn</strong><small>Small steps</small></span>${icon("arrow", "quick-arrow")}</button>
-        </section>
-        <section class="card composer"><span class="avatar avatar-asha">AS</span><button class="composer-prompt" data-action="create-post">What’s on your mind?</button><button class="round-primary" data-action="create-post" aria-label="Create post">${icon("plus")}</button></section>
-        <section>
-          <div class="section-head calm-head"><div><span class="eyebrow">Your circles</span><h2>Shared with care</h2></div><div class="filter-chips"><button class="chip active">Latest</button><button class="chip">Questions</button></div></div>
-          <div class="stack">${posts.slice(0, 3).map(postMarkup).join("") || emptyFeedMarkup()}</div>
+        <section class="feed-region" aria-labelledby="feed-title">
+          <div class="section-head calm-head"><div><span class="eyebrow">Community</span><h2 id="feed-title">From your circles</h2></div><div class="filter-chips" aria-label="Filter community posts"><button class="chip ${state.feedFilter === "latest" ? "active" : ""}" data-action="filter-feed" data-filter="latest" aria-pressed="${state.feedFilter === "latest"}">Latest</button><button class="chip ${state.feedFilter === "questions" ? "active" : ""}" data-action="filter-feed" data-filter="questions" aria-pressed="${state.feedFilter === "questions"}">Questions</button></div></div>
+          <section class="card composer"><span class="avatar avatar-asha">AS</span><button class="composer-prompt" data-action="create-post"><strong>Share with your circle</strong><small>Ask a question or offer support</small></button><button class="round-primary" data-action="create-post" aria-label="Create a community post">${icon("plus")}</button></section>
+          <div class="stack post-stack">${posts.slice(0, 3).map(postMarkup).join("") || emptyFeedMarkup()}</div>
         </section>
       </div>
       <aside class="stack home-side">
-        <section class="card context-card"><div class="section-head"><div><span class="eyebrow">Your circles</span><h3>You belong here</h3></div><button class="icon-link" data-route="communities" aria-label="View all circles">${icon("arrow")}</button></div>${state.joined.slice(0, 3).map((id) => communityMiniMarkup(getCommunity(id))).join("")}</section>
-        <section class="card context-card people-card"><div class="section-head"><div><span class="eyebrow">People</span><h3>Say hello</h3></div></div><div class="people-list">${visiblePeople().filter((p) => !state.connections.includes(p.id)).slice(0, 2).map(personRowMarkup).join("")}</div></section>
-        <div class="kind-note">${icon("shield")}<span><strong>You choose what to share.</strong><small>Connect before chatting.</small></span></div>
+        ${request ? `<section class="card context-card request-highlight"><div class="section-head"><div><span class="eyebrow">New connection</span><h3>Someone reached out</h3></div></div><div class="person-row">${avatar(request)}<div class="person-info"><strong>${escapeHTML(request.name)}</strong><small>${escapeHTML(request.community)} · ${escapeHTML(request.city)}</small></div></div><p>Would like to exchange practical caregiver resources.</p><div class="request-actions"><button class="primary-button small-button" data-action="accept-request" data-person="${request.id}">Accept</button><button class="secondary-button small-button" data-action="decline-request" data-person="${request.id}">Not now</button></div></section>` : ""}
+        <section class="card context-card"><div class="section-head"><div><span class="eyebrow">Your circles</span><h3>Spaces you joined</h3></div><button class="icon-link" data-route="communities" aria-label="View all circles">${icon("arrow")}</button></div>${state.joined.slice(0, 3).map((id) => communityMiniMarkup(getCommunity(id))).join("")}</section>
+        <section class="card context-card people-card"><div class="section-head"><div><span class="eyebrow">People</span><h3>Meet someone new</h3></div></div><div class="people-list">${visiblePeople().filter((p) => !state.connections.includes(p.id) && p.id !== request?.id).slice(0, 2).map(personRowMarkup).join("")}</div></section>
+        <button class="kind-note safety-entry" data-action="pilot-info">${icon("shield")}<span><strong>Your space, your pace</strong><small>Connect before chat · Report anytime</small></span>${icon("arrow", "row-arrow")}</button>
       </aside>
     </div>
   </div>`;
@@ -197,7 +216,7 @@ function postMarkup(post) {
     <header class="post-header"><button class="avatar-button" data-action="view-member" data-person="${post.author}" aria-label="View ${escapeHTML(person.name)}">${avatar(person)}</button><div class="post-author"><strong>${escapeHTML(person.name)}</strong><span class="post-meta">${escapeHTML(community?.name || "Community")} · ${escapeHTML(post.time)}</span></div><button class="post-menu" data-action="post-menu" data-post="${post.id}" aria-label="Post options">${icon("more")}</button></header>
     <h3 class="post-title">${escapeHTML(post.title)}</h3><p class="post-body">${escapeHTML(post.body)}</p>
     <div class="post-tags">${post.tags.slice(0, 2).map((tag) => `<span class="tag">${escapeHTML(tag)}</span>`).join("")}</div>
-    <footer class="post-actions"><button class="post-action ${reaction === "support" ? "active" : ""}" data-action="react" data-post="${post.id}" data-reaction="support" aria-label="Send support">${icon("heart")}<span>${post.support + (reaction === "support" ? 1 : 0)}</span></button><button class="post-action" data-action="comment" data-post="${post.id}" aria-label="Reply">${icon("reply")}<span>${post.comments}</span></button><button class="post-action save-action" data-action="save-post" data-post="${post.id}" aria-label="Save post">${icon("bookmark")}</button></footer>
+    <footer class="post-actions"><button class="post-action ${reaction === "support" ? "active" : ""}" data-action="react" data-post="${post.id}" data-reaction="support" aria-label="Send support" aria-pressed="${reaction === "support"}">${icon("heart")}<span>${post.support + (reaction === "support" ? 1 : 0)}</span></button><button class="post-action" data-action="comment" data-post="${post.id}" aria-label="Reply">${icon("reply")}<span>${post.comments}</span></button><button class="post-action save-action" data-action="save-post" data-post="${post.id}" aria-label="Save post">${icon("bookmark")}</button></footer>
   </article>`;
 }
 
@@ -220,9 +239,10 @@ function resourceCompactMarkup(resource) {
 }
 
 function renderCommunities() {
+  const visibleCommunities = state.communityFilter === "joined" ? communities.filter((community) => state.joined.includes(community.id)) : communities;
   return `<div class="page"><header class="page-header simple-header"><div><span class="eyebrow">Find your people</span><h1>Your circles</h1><p>Quiet, moderated spaces where experience is enough.</p></div><div class="header-actions"><button class="round-secondary" data-action="community-request" aria-label="Request a circle">${icon("plus")}</button></div></header>
-    <div class="filter-chips" style="margin-bottom:18px"><button class="chip active">All circles</button><button class="chip">Joined</button></div>
-    <section class="community-grid">${communities.map(communityCardMarkup).join("")}</section>
+    <div class="filter-chips" style="margin-bottom:18px" aria-label="Filter circles"><button class="chip ${state.communityFilter === "all" ? "active" : ""}" data-action="filter-communities" data-filter="all" aria-pressed="${state.communityFilter === "all"}">All circles</button><button class="chip ${state.communityFilter === "joined" ? "active" : ""}" data-action="filter-communities" data-filter="joined" aria-pressed="${state.communityFilter === "joined"}">Joined</button></div>
+    <section class="community-grid">${visibleCommunities.map(communityCardMarkup).join("")}</section>
     <section class="card card-pad people-discovery" style="margin-top:18px"><div class="section-head"><div><span class="eyebrow">People</span><h2>Meet someone who gets it</h2></div></div><div class="people-list">${visiblePeople().map(personRowMarkup).join("")}</div></section>
   </div>`;
 }
@@ -281,18 +301,24 @@ function resourceRowMarkup(resource) {
 
 function renderProfile() {
   return `<div class="page"><section class="card profile-hero"><span class="avatar avatar-asha">AS</span><div><span class="eyebrow">Your space</span><h1>Asha Shah</h1><p>${escapeHTML(state.role)} · Ahmedabad</p></div><div class="profile-stats"><div><strong>${state.connections.length}</strong><small>People</small></div><div><strong>${state.joined.length}</strong><small>Circles</small></div></div></section>
-    <div class="settings-grid" style="margin-top:18px"><section class="card setting-card"><div class="section-head"><div><span class="setting-title-icon">${icon("shield")}</span><h2>Privacy</h2></div></div><div class="setting-row"><div><strong>Limited profile</strong><small>Share less with new people.</small></div><button class="toggle ${state.privateProfile ? "on" : ""}" data-action="toggle-setting" data-setting="privateProfile" aria-label="Toggle limited profile"></button></div><div class="setting-row"><div><strong>Blocked people</strong><small>${state.blocked.length} blocked</small></div><button class="icon-link" data-action="manage-blocked" aria-label="Manage blocked people">${icon("arrow")}</button></div><div class="setting-row"><div><strong>Your data</strong><small>View or export.</small></div><button class="icon-link" data-action="data-rights" aria-label="Open data controls">${icon("arrow")}</button></div></section>
-      <section class="card setting-card"><div class="section-head"><div><span class="setting-title-icon">${icon("chat")}</span><h2>Peace &amp; quiet</h2></div></div><div class="setting-row"><div><strong>Quiet hours</strong><small>9 PM–8 AM</small></div><button class="toggle ${state.quietHours ? "on" : ""}" data-action="toggle-setting" data-setting="quietHours" aria-label="Toggle quiet hours"></button></div><div class="setting-row"><div><strong>Language</strong><small>English</small></div><button class="text-button" id="profile-language" data-action="language">${state.language}</button></div></section>
+    <div class="settings-grid" style="margin-top:18px"><section class="card setting-card"><div class="section-head"><div><span class="setting-title-icon">${icon("shield")}</span><h2>Privacy</h2></div></div><div class="setting-row"><div><strong>Limited profile</strong><small>Share less with new people.</small></div><button class="toggle ${state.privateProfile ? "on" : ""}" data-action="toggle-setting" data-setting="privateProfile" aria-label="Toggle limited profile" aria-pressed="${state.privateProfile}"></button></div><div class="setting-row"><div><strong>Blocked people</strong><small>${state.blocked.length} blocked</small></div><button class="icon-link" data-action="manage-blocked" aria-label="Manage blocked people">${icon("arrow")}</button></div><div class="setting-row"><div><strong>Your data</strong><small>View or export.</small></div><button class="icon-link" data-action="data-rights" aria-label="Open data controls">${icon("arrow")}</button></div></section>
+      <section class="card setting-card"><div class="section-head"><div><span class="setting-title-icon">${icon("chat")}</span><h2>Peace &amp; quiet</h2></div></div><div class="setting-row"><div><strong>Quiet hours</strong><small>9 PM–8 AM</small></div><button class="toggle ${state.quietHours ? "on" : ""}" data-action="toggle-setting" data-setting="quietHours" aria-label="Toggle quiet hours" aria-pressed="${state.quietHours}"></button></div><div class="setting-row"><div><strong>Language</strong><small>English</small></div><button class="text-button" id="profile-language" data-action="language">${state.language}</button></div></section>
       <section class="card setting-card feedback-card"><span class="setting-title-icon">${icon("heart")}</span><h2>Help us make this kinder</h2><button class="primary-button" data-action="feedback">Share feedback</button></section>
       <section class="card setting-card"><div class="section-head"><div><h2>Demo controls</h2></div></div><div class="setting-row"><div><strong>Start welcome again</strong></div><button class="text-button" data-action="restart-onboarding">Restart</button></div><div class="setting-row"><div><strong>Clear demo activity</strong></div><button class="text-button" style="color:#a43b34" data-action="reset-demo">Reset</button></div></section></div></div>`;
 }
 
+let lastFocusedElement = null;
+
 function openModal({ title, subtitle = "", body, footer = "", wide = false, className = "" }) {
+  if (!document.querySelector(".modal")) lastFocusedElement = document.activeElement;
   document.querySelector("#modal-root").innerHTML = `<div class="modal-backdrop" data-action="close-modal"><section class="modal ${wide ? "wide" : ""} ${className}" role="dialog" aria-modal="true" aria-labelledby="modal-title"><header class="modal-header"><div><h2 id="modal-title">${title}</h2>${subtitle ? `<p>${subtitle}</p>` : ""}</div><button class="modal-close" data-action="close-modal" aria-label="Close">×</button></header><div class="modal-body">${body}</div>${footer ? `<footer class="modal-footer">${footer}</footer>` : ""}</section></div>`;
   document.querySelector(".modal-close")?.focus();
 }
 
-function closeModal() { document.querySelector("#modal-root").innerHTML = ""; }
+function closeModal() {
+  document.querySelector("#modal-root").innerHTML = "";
+  if (lastFocusedElement?.isConnected) requestAnimationFrame(() => lastFocusedElement.focus());
+}
 
 function openCreatePost() {
   const options = state.joined.map((id) => `<option value="${id}">${getCommunity(id)?.name}</option>`).join("");
@@ -340,7 +366,7 @@ function openSearch(query = "") {
 function openOnboarding(step = 1) {
   const progress = `<div class="onboarding-progress">${[1,2,3].map((n) => `<span class="${n <= step ? "done" : ""}"></span>`).join("")}</div>`;
   if (step === 1) {
-    openModal({ title: "", className: "onboarding", body: `${progress}<div class="onboarding-hero"><span class="brand-mark">R</span><span class="eyebrow">Welcome</span><h1>You don’t have to do this alone.</h1><p>Meet people who understand. Find support when you need it.</p></div><div class="kind-note compact">${icon("shield")}<span><strong>A safer space</strong><small>No medical or emergency advice.</small></span></div>`, footer: `<button class="primary-button" data-action="onboarding-next" data-step="2">Continue</button>` });
+    openModal({ title: "", className: "onboarding", body: `${progress}<div class="onboarding-hero"><span class="brand-mark logo-mark"><img src="./assets/brand/rareconnect-logo-concept-v3.svg" alt="" /></span><span class="eyebrow">Welcome</span><h1>You don’t have to do this alone.</h1><p>Meet people who understand. Find support when you need it.</p></div><div class="kind-note compact">${icon("shield")}<span><strong>A safer space</strong><small>No medical or emergency advice.</small></span></div>`, footer: `<button class="primary-button" data-action="onboarding-next" data-step="2">Continue</button>` });
   } else if (step === 2) {
     openModal({ title: "Tell us your role", subtitle: "The first pilot is restricted to adults and adult caregivers.", className: "onboarding", body: `${progress}<div class="choice-grid"><label class="choice-card"><input type="radio" name="role" value="Adult living with a rare disease" ${state.role.includes("living") ? "checked" : ""}/><span><strong>I live with a rare disease</strong><small>I am 18 or older.</small></span></label><label class="choice-card"><input type="radio" name="role" value="Caregiver" ${state.role === "Caregiver" ? "checked" : ""}/><span><strong>I am a caregiver</strong><small>I am 18 or older.</small></span></label></div><label class="choice-card" style="margin-top:12px"><input id="adult-confirm" type="checkbox"/><span><strong>I confirm I am 18 or older</strong><small>Minor accounts, profiles and chat are not included in this pilot.</small></span></label>`, footer: `<button class="secondary-button" data-action="onboarding-next" data-step="1">Back</button><button class="primary-button" data-action="onboarding-role">Continue</button>` });
   } else {
@@ -351,7 +377,8 @@ function openOnboarding(step = 1) {
 function showToast(title, detail = "") {
   const toast = document.createElement("div");
   toast.className = "toast";
-  toast.innerHTML = `<strong>${escapeHTML(title)}</strong>${detail ? `<small>${escapeHTML(detail)}</small>` : ""}`;
+  toast.setAttribute("role", "status");
+  toast.innerHTML = `<span class="toast-symbol" aria-hidden="true">✓</span><span><strong>${escapeHTML(title)}</strong>${detail ? `<small>${escapeHTML(detail)}</small>` : ""}</span>`;
   document.querySelector("#toast-root").append(toast);
   setTimeout(() => toast.remove(), 3600);
 }
@@ -367,13 +394,15 @@ document.addEventListener("click", (event) => {
   if (routeButton && !routeButton.dataset.action) { closeModal(); routeTo(routeButton.dataset.route); return; }
   const button = event.target.closest("[data-action]");
   if (!button) return;
-  const { action, person, community, post, reaction, service, step, setting } = button.dataset;
+  const { action, person, community, post, reaction, service, step, setting, filter } = button.dataset;
 
   if (action === "close-modal") {
     if (button.classList.contains("modal-backdrop") && event.target !== button) return;
     closeModal();
   }
   if (action === "create-post") openCreatePost();
+  if (action === "filter-feed") { state.feedFilter = filter || "latest"; saveState(); render(); }
+  if (action === "filter-communities") { state.communityFilter = filter || "all"; saveState(); render(); }
   if (action === "view-member") openMember(person);
   if (action === "connect") {
     if (!state.pendingOutgoing.includes(person)) state.pendingOutgoing.push(person);
@@ -468,6 +497,16 @@ document.addEventListener("submit", (event) => {
 document.addEventListener("keydown", (event) => {
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); document.querySelector("#global-search")?.focus(); }
   if (event.key === "Escape") closeModal();
+  if (event.key === "Tab") {
+    const modal = document.querySelector(".modal");
+    if (!modal) return;
+    const focusable = [...modal.querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')];
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
 });
 
 document.querySelector("#global-search").addEventListener("keydown", (event) => {
@@ -476,6 +515,9 @@ document.querySelector("#global-search").addEventListener("keydown", (event) => 
 
 document.querySelector("#notifications-button").addEventListener("click", () => {
   state.notificationCount = 0; saveState(); renderNavigation();
+  document.querySelector("#notifications-button")?.setAttribute("aria-label", "Notifications, none unread");
+  const dot = document.querySelector("#notifications-button .notification-dot");
+  if (dot) dot.hidden = true;
   openModal({ title: "Notifications", subtitle: "Private by default", body: `<div class="people-list"><div class="community-mini"><span class="community-icon teal">${icon("heart")}</span><div><strong>Someone sent support</strong><small>12 minutes ago</small></div></div><div class="community-mini"><span class="community-icon blue">${icon("people")}</span><div><strong>New connection request</strong><small>1 hour ago</small></div></div><div class="community-mini"><span class="community-icon amber">${icon("shield")}</span><div><strong>A resource was reviewed</strong><small>Yesterday</small></div></div></div>` });
 });
 

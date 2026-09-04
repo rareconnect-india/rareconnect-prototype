@@ -1,11 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">RareConnect</title>
-  <desc id="desc">A zebra-striped conversation bubble connecting two people.</desc>
-  <rect width="512" height="512" rx="112" fill="#F5F7F5"/>
+  <title id="title">RareConnect logo concept</title>
+  <desc id="desc">A zebra-striped conversation bubble above two equal people joined by a shared bridge.</desc>
+  <!-- Two equal people, connected by one shared path. -->
   <circle cx="72" cy="280" r="30" fill="#073B4C"/>
   <circle cx="440" cy="280" r="30" fill="#18BFB2"/>
   <path d="M72 331c15 70 78 108 184 108" fill="none" stroke="#073B4C" stroke-width="42" stroke-linecap="round"/>
   <path d="M440 331c-15 70-78 108-184 108" fill="none" stroke="#18BFB2" stroke-width="42" stroke-linecap="round"/>
+
+  <!-- The rare-disease voice is deliberately the visual centrepiece. -->
   <path d="M256 54C166 54 108 106 108 181c0 69 52 121 124 132l-16 43 59-41c77-7 129-61 129-134 0-75-58-127-148-127Z" fill="#FF6B5E" stroke="#073B4C" stroke-width="10" stroke-linejoin="round"/>
   <g fill="#111111">
     <path d="M173 101c51-21 108-25 163-12 10 5 19 11 27 18-67-15-128-8-184 19Z"/>
@@ -14,4 +16,5 @@
     <path d="M139 256c76-29 156-20 237-43-4 11-9 21-16 30-70 18-137 12-207 37-6-7-10-15-14-24Z"/>
     <path d="M174 293c53-17 108-10 158-22-10 9-21 17-34 23-36 5-71 2-104 9-7-3-14-6-20-10Z"/>
   </g>
+  <path d="M256 54C166 54 108 106 108 181c0 69 52 121 124 132l-16 43 59-41c77-7 129-61 129-134 0-75-58-127-148-127Z" fill="none" stroke="#073B4C" stroke-width="10" stroke-linejoin="round"/>
 </svg>
